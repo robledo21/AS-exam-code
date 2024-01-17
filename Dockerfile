@@ -1,16 +1,13 @@
 FROM python:3.10-slim
 
-RUN echo "deb http://archive.ubuntu.com/ubuntu precise main universe" > /etc/apt/sources.list
-RUN apt-get update
-RUN apt-get -y install python-software-properties git build-essential
-RUN add-apt-repository -y ppa:chris-lea/node.js
-RUN apt-get update
-RUN apt-get -y install nodejs
+ENV APP_HOME="/app"
 
-WORKDIR /app
+WORKDIR ${APP_HOME}
 
-COPY . /app
+COPY package*.json ${APP_HOME}/
 
-RUN npm install
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc npm install
 
-CMD ["npm"]
+COPY . ${APP_HOME}/
+
+CMD npm start
